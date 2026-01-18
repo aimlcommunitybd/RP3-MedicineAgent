@@ -1,41 +1,124 @@
-# SLMs in Multi-agent System
+# SLMs in Multi-Agent Systems for Medication Safety
+
+This repository explores the design and evaluation of **Small Language Model (SLM)–based multi-agent systems** for answering medication-related queries.
+
+---
 
 ## Research Objective
-Assess how well SLM-based multi-agent systems can answer medication-related questions safely and accurately, and determine whether multi-agent designs outperform LLM-based single-agent chatbots for drug information.
+
+The primary objectives of this research are:
+
+- Assess how effectively **SLM-based multi-agent architectures** can answer medication-related questions safely and accurately
+- Compare **multi-agent SLM systems** against **single-agent LLM chatbots** in terms of reliability, hallucination control, and safety for drug information
+
+---
 
 ## Quick Setup
+
+### Setup Workspace
+
 ```bash
-git clone 
+git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
+cd RP3-MedicineAgent
+
 uv venv
 uv sync
+uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+uv pip install "transformers[torch]"
+sudo apt-get install git-lfs
+```
+
+### Download Models
+
+```bash
+# Format: uv run scripts/download_model.py <hf_repo_id> <gguf_filename>
+
+uv run scripts/download_model.py "unsloth/medgemma-4b-it-GGUF" "medgemma-4b-it-BF16.gguf"
+```
+
+### Update Environment Secret
+```
+cp .env.example .env # Later add actual environment variables in .env
+```
+
+### Run Chat Command
+```bash
+# Format: uv run chat.py <query>
+
+uv run chat.py "Is it safe to take metformin and atorvastatin together?"
 ```
 
 ---
 
-### Global Dependencies
-```bash
-sudo apt-get install git-lfs
-uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-uv pip install "transformers[torch]"
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh # not needed
+## Architecture
+
+![Draft Architecture](resources/architecture-1.png)
+
+High-level flow:
+
+* User queries are routed through an orchestrator
+* Specialized agents (general reasoning, medical expert) collaborate
+* Retrieval tools support evidence-grounded responses
+* Safety-aware responses are returned to the user
+
+---
+
+## Project Structure
+
+```text
+.
+├── chat.py                # Entry point for interactive chat
+├── dataset/               # Drug–drug interaction datasets
+├── resources/             # Diagrams and documentation assets
+├── scripts/               # Utility scripts (model download, setup)
+├── src/
+│   ├── agents/            # Agent roles (general, expert)
+│   ├── app/               # Orchestration logic
+│   ├── engine/            # LLM tools
+│   ├── models/            # Model files and metadata
+│   ├── prompts/           # Prompt templates
+│   ├── tools/             # Vector and web search tools
+│   └── settings.py        # Global configuration
+└── pyproject.toml
 ```
 
-### Models
-- MedGemma4B: https://deepmind.google/models/gemma/medgemma/
+---
 
-```bash
-git clone https://huggingface.co/google/medgemma-4b-it
-```
-- GGUF of MedGemma4b: https://huggingface.co/unsloth/medgemma-4b-it-GGUF/tree/main
-```
-uv run src/models/download_model.py "unsloth/medgemma-4b-it-GGUF" "medgemma-4b-it-BF16.gguf"
-```
+## Models
 
-### Some Web-database about medicines
-- medex.com.bd    
-- Drugs.com  
-- RxList  
-- Medscape  
-- medsbd.com  
-- farmacoinc.com  
-- www.arogga.com
+1. MedGemma-4B (Instruction-Tuned)
+
+* Official model: [https://deepmind.google/models/gemma/medgemma/](https://deepmind.google/models/gemma/medgemma/)
+* GGUF source: [https://huggingface.co/unsloth/medgemma-4b-it-GGUF](https://huggingface.co/unsloth/medgemma-4b-it-GGUF)
+
+---
+
+## External Medical Knowledge Sources
+
+Publicly accessible sources used for retrieval and reference:
+
+* medex.com.bd
+* drugs.com
+* rxlist.com
+* medscape.com
+* medsbd.com
+* farmacoinc.com
+* arogga.com
+
+> These sources are used for **informational support only**.
+
+---
+
+## Help
+1. How to install uv?  
+Answer: Please refere to [resources/pkg.md](resources/pkg.md)
+
+## Disclaimer
+
+This project is intended **solely for research and educational purposes**.
+It is **not a medical device** and must not be used for clinical diagnosis, treatment, or decision-making.
+
+---
+
+
+
