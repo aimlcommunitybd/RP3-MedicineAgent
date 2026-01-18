@@ -13,3 +13,4 @@ There are most used git commands in a project.
 - `git commit -a -m"<commit message>"`: stage all changes and commit 
 - `git log`: list of commits
 - `git push`: push changes to repote repository (github)
+- `git push --set-upstream origin <branch-name>`: push a new branch with changes (later submit PR on github)
