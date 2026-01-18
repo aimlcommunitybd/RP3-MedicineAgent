@@ -96,6 +96,7 @@ High-level flow:
 │   ├── engine/            # LLM tools
 │   ├── models/            # Model files and metadata
 │   ├── prompts/           # Prompt templates
+|   ├── rag/               # rag and vector db logics
 │   ├── tools/             # Vector and web search tools
 │   └── settings.py        # Global configuration
 └── pyproject.toml
