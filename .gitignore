@@ -6,10 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
-# Distribution / packaging
-.Python
+# Language Models
+models/
 models/downloads/
 models/download/
+*.model
+*.gguf
+
+# Distribution / packaging
+.Python
 build/
 develop-eggs/
 dist/
