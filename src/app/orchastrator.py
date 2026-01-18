@@ -26,5 +26,7 @@ def chat(text):
     # Time and Resource Tracker
     # Shared Context Memory
     # ChatID based Context tracker
+    
+    # Chat UI (future)
     return print(f"Hard Coded Response: {text}")
 
