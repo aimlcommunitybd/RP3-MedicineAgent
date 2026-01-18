@@ -11,7 +11,7 @@ logger = structlog.get_logger(__name__)
 def download_model(
     repo_id: str,
     filename: str,
-    save_dir: Path = Path("./src/models/"),
+    save_dir: Path = Path("./src/models/downloads/"),
     repo_type: str = "model",
 ) -> None:
     """
@@ -19,7 +19,7 @@ def download_model(
     Args:
         repo_id (str): huggingface repo id
         filename (str): model file name to download
-        save_dir (Path): directory to save the downloaded model
+        save_dir (Path): directory to save the downloaded model. Default to "./src/models/downloads/"
         repo_type (str, optional): type of repository. Defaults to "model".
     """
     os.makedirs(save_dir, exist_ok=True)
@@ -54,7 +54,7 @@ def main():
         "filename", type=str, help="Model file name to download",
     )
     parser.add_argument(
-        "--save_dir", type=str, default="./src/models/", help="Directory to save the downloaded model",
+        "--save_dir", type=str, default="./src/models/downloads/", help="Directory to save the downloaded model",
     )
     parser.add_argument(
         "--repo_type", type=str, default="model", help="Type of HuggingFace repositoy"

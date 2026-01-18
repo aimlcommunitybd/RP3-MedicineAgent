@@ -1,21 +1,44 @@
+import os
 import time
 from typing import Union, List, Tuple
 
 import structlog
+from llama_cpp import Llama
 
-from src.models import load_model
+from src import settings
 
-
-MODEL = load_model()
 
 logger = structlog.get_logger(__name__)
+
+
+
+def load_model(
+    model_path: str = settings.GENERAL_MODEL,
+    context_window: int = settings.CONTEXT_WINDOW,
+) -> Llama:
+    """
+    load gguf formatted model from local
+    """
+    if not os.path.exists(model_path):
+        logger.error(
+            f"Recheck  MODEL_PATH': '{model_path}' is correct path",
+            model_path=model_path,
+        )
+        raise FileNotFoundError(f"Model file not found at {model_path}")
+
+    logger.info(f"Loading model", context_window=context_window, model_path=model_path)
+    model = Llama(
+        model_path=model_path,
+        n_ctx=context_window,
+    )
+    return model
 
 
 def infer(
     prompt: Union[list, str],
     max_tokens: int = 1024,
     temperature: int = 0.7,
-    model=MODEL,
+    model=Llama,
 ) -> Tuple:
     """
     Main function for inferece.
@@ -58,3 +81,5 @@ def process_prompt(
             {"role": "user", "content": prompt},
         ]
     return prompt
+
+
