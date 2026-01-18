@@ -1,0 +1,2 @@
+- UV: https://docs.astral.sh/uv/
+- Transformers: https://github.com/huggingface/transformers
