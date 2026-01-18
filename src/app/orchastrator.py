@@ -17,9 +17,14 @@ EXPERT_MODEL = load_model(model_path=settings.EXPERT_MODEL)
 def chat(text):
     # Classification
     # NER
-    # Knowledge Tools
+    # Ground Knowledge
     # Expert Response Generation
     # Supervisor based Response Validation
     # Empathy rewrite
+    # Return
+    
+    # Time and Resource Tracker
+    # Shared Context Memory
+    # ChatID based Context tracker
     return print(f"Hard Coded Response: {text}")
 
