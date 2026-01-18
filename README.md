@@ -13,9 +13,15 @@ The primary objectives of this research are:
 
 ---
 
-## Quick Setup
+## Quick Setup (Linux - Ubuntu)
 
-### Setup Workspace
+Here’s a clean, ready-to-copy version of your README **Setup Workspace** section, including both options and proper markdown formatting:
+
+### 1. Setup Workspace
+You can either install manually or use the `setup.sh` script.
+
+#### Option 1: Manual Setup
+**Note:** `git` and `uv` should be already installed in your system. Read [uv-astral installation guide](https://docs.astral.sh/uv/getting-started/installation/) for more.
 
 ```bash
 git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
@@ -26,9 +32,22 @@ uv sync
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 uv pip install "transformers[torch]"
 sudo apt-get install git-lfs
+git lfs install
 ```
 
-### Download Models
+#### Option 2: Automated Setup
+
+Run the included setup script to perform all steps automatically. 
+Incase you encounter any system level error, please setup manually.
+
+```bash
+git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
+cd RP3-MedicineAgent
+
+bash setup.sh
+```
+
+### 2. Download Models
 
 ```bash
 # Format: uv run scripts/download_model.py <hf_repo_id> <gguf_filename>
@@ -36,12 +55,12 @@ sudo apt-get install git-lfs
 uv run scripts/download_model.py "unsloth/medgemma-4b-it-GGUF" "medgemma-4b-it-BF16.gguf"
 ```
 
-### Update Environment Secret
+### 3. Update Environment Secret
 ```
 cp .env.example .env # Later add actual environment variables in .env
 ```
 
-### Run Chat Command
+### 4. Run Chat Command
 ```bash
 # Format: uv run chat.py <query>
 
