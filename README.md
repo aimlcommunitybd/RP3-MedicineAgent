@@ -15,8 +15,6 @@ The primary objectives of this research are:
 
 ## Quick Setup (Linux - Ubuntu)
 
-Here’s a clean, ready-to-copy version of your README **Setup Workspace** section, including both options and proper markdown formatting:
-
 ### 1. Setup Workspace
 You can either install manually or use the `setup.sh` script.
 
@@ -36,9 +34,8 @@ git lfs install
 ```
 
 #### Option 2: Automated Setup
-
-Run the included setup script to perform all steps automatically. 
-Incase you encounter any system level error, please setup manually.
+Run the setup script to perform all steps automatically. 
+In case you encounter any system level error, please setup manually.
 
 ```bash
 git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
