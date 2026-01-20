@@ -10,4 +10,6 @@ dependencies = [
     "llama-cpp-python>=0.3.16",
     "python-dotenv>=1.2.1",
     "structlog>=25.5.0",
+    "lancedb>=0.6.1",
+    "sentence-transformers>=3.0.1",
 ]

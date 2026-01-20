@@ -153,6 +153,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+/lancedb_data/
 
 # Spyder project settings
 .spyderproject
