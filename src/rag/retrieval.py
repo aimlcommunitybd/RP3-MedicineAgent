@@ -1,34 +1,32 @@
 import lancedb
 from sentence_transformers import SentenceTransformer
-from pathlib import Path
+from functools import lru_cache
 
-def search_drug_interactions(query: str, limit: int = 5):
+# ---------- singleton model ----------
+@lru_cache(maxsize=1)
+def _get_model() -> SentenceTransformer:
+    return SentenceTransformer("all-MiniLM-L6-v2")
+
+# ---------- single reusable DB handle ----------
+_db = lancedb.connect("src/rag/lancedb")
+_table = _db.open_table("drug_interactions")
+
+def search_interactions(query: str, limit: int = 3):
     """
-    Searches for drug interactions in the LanceDB table.
-
-    Args:
-        query: The drug name to search for.
-        limit: The maximum number of results to return.
-
-    Returns:
-        A list of drug interaction information.
+    Fast vector search that lets LanceDB embed the query internally.
+    Returns list[dict] with keys Drug 1, Drug 2, Interaction Description.
     """
-    # Define the path to the database directory relative to this script
-    db_path = Path(__file__).parent / "lancedb_data"
+    # LanceDB >= 0.5 accepts raw text and embeds under the hood
+    df = (_table
+          .search(query)            # text → embedding inside LanceDB
+          .limit(limit)
+          .to_pandas())            # deprecated to_df() removed
 
-    # Connect to LanceDB
-    db = lancedb.connect(db_path)
-    
-    # Open the table
-    table = db.open_table("drug_interactions")
-    
-    # Initialize the sentence transformer model
-    model = SentenceTransformer('all-MiniLM-L6-v2')
-    
-    # Create an embedding for the query
-    query_vector = model.encode(query)
-    
-    # Search for similar vectors in the table
-    results = table.search(query_vector).limit(limit).to_df()
-    
-    return results.to_dict(orient="records")
+    return [{"Drug 1": r["drug1"],
+             "Drug 2": r["drug2"],
+             "Interaction Description": r["description"]}
+            for _, r in df.iterrows()]
+
+# ---------- quick self-test ----------
+if __name__ == "__main__":
+    print(search_interactions("napa and Ibuprofen"))
