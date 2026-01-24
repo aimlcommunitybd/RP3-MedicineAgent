@@ -24,13 +24,8 @@ You can either install manually or use the `setup.sh` script.
 ```bash
 git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
 cd RP3-MedicineAgent
-
 uv venv
 uv sync
-uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-uv pip install "transformers[torch]"
-sudo apt-get install git-lfs
-git lfs install
 ```
 
 #### Option 2: Automated Setup
@@ -40,7 +35,6 @@ In case you encounter any system level error, please setup manually.
 ```bash
 git clone https://github.com/aimlcommunitybd/RP3-MedicineAgent.git
 cd RP3-MedicineAgent
-
 bash setup.sh
 ```
 
