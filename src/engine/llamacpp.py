@@ -12,9 +12,9 @@ logger = structlog.get_logger(__name__)
 
 
 
-def load_model(
-    model_path: str = settings.GENERAL_MODEL,
-    context_window: int = settings.CONTEXT_WINDOW,
+def load_gguf_model(
+    model_path: str = settings.EXPERT_MODEL_PATH,
+    context_window: int = 1024,
 ) -> Llama:
     """
     load gguf formatted model from local
@@ -34,7 +34,7 @@ def load_model(
     return model
 
 
-def infer(
+def infer_local_model(
     prompt: Union[list, str],
     max_tokens: int = 1024,
     temperature: int = 0.7,
@@ -63,7 +63,7 @@ def infer(
     logger.info(
         "Generation Done", content=content, completion=completion, runtime=f"{runtime}s"
     )
-    return completion
+    return completion, content
 
 
 def process_prompt(

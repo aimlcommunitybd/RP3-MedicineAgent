@@ -47,6 +47,7 @@ cp .env.example .env # Later add actual environment variables in .env
 ### 3. Download Models
 This command downloads the gguf formatted models to `src/models/downloads/` by default.   
 After downloading a model update your `.env` file with proper filepath.  
+We'll use an expert model for Doctor Agent. For that an expert model is required. **Skip to generate general response only.**  
 **Format:** `uv run scripts/download_model.py <hf_repo_id> <gguf_filename>`  
 
 ```bash
@@ -54,9 +55,13 @@ uv run scripts/download_model.py "unsloth/medgemma-4b-it-GGUF" "medgemma-4b-it-B
 ```
 
 ### 4. Run Chat Command
-Format: `uv run chat.py <query>`
+Format: `uv run chat.py <args>`
 ```bash
-uv run chat.py "Is it safe to take metformin and atorvastatin together?"
+# For cotinuous chat: 
+uv run chat.py --live_chat
+
+# For single query: 
+uv run chat.py --query "What is Type-2 Diabetes?"
 ```
 
 ---
