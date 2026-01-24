@@ -1,4 +1,7 @@
 #!/bin/bash
+# This script is for ubuntu based system
+# If you're using windows or mac, please use a virtual machine or setup manualy
+
 set -e
 
 echo "Installing pipx globally (if not installed)..."
