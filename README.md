@@ -103,7 +103,7 @@ High-level flow:
 * Official model: [https://deepmind.google/models/gemma/medgemma/](https://deepmind.google/models/gemma/medgemma/)
 * GGUF source: [https://huggingface.co/unsloth/medgemma-4b-it-GGUF](https://huggingface.co/unsloth/medgemma-4b-it-GGUF)
 
-2. OpenRouter
+2. OpenRouter  
 We use several api based small models via openrouter
 ---
 
