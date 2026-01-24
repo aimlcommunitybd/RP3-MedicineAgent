@@ -1,19 +1,76 @@
 import sys
 import argparse
+from typing import Union
 
-from src.app.orchastrator import chat
+from src import settings
+from src.engine.llamacpp import load_gguf_model
+from src.engine.openrouter import MODEL as OpenRouterModel
+from src.app.orchestrator import chat
 
-parser = argparse.ArgumentParser(prog='cmd based chat for Medicine Agent')
+GENERAL_MODEL = OpenRouterModel
+EXPERT_MODEL = None  # load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
+
 
 def handle():
+    parser = argparse.ArgumentParser(prog="cmd based chat for Medicine Agent")
+    parser.add_argument("--query", type=str, help="Pass for single query and answer")
     parser.add_argument(
-        'text', type=str, help='Handle for the Medicine Agent chat session'
+        "--live_chat",
+        action="store_true",
+        help="Pass this flag for interactive chat session",
     )
     args = parser.parse_args()
-    response = f"\n\nHardcoded Dummy Response: {args.text}\n\n"
-    sys.stdout.write(response)
-    return response
+
+    # General Single Query
+    if not args.live_chat:
+        response = chat(
+            text=args.query,
+            chat_history=None,
+            expert_model=EXPERT_MODEL,
+            general_model=OpenRouterModel,
+        )
+        sys.stdout.write(f"ChatBot: {response}\n")
+
+    # Live Chat Session
+    else:
+        run_live_chat(
+            general_model=GENERAL_MODEL,
+        )
 
 
-if __name__=="__main__":
+def run_live_chat(
+    expert_model: Union[object, str] = None,
+    general_model: Union[object, str] = GENERAL_MODEL,
+):
+    chat_history = []
+    sys.stdout.write(
+        f"\n{'==='*80}\nTurning on Interactive Chat Session. Press 'ctrl+c' to stop.\n{'==='*80}\n\n"
+    )
+    try:
+        while True:
+            query = input("User: ")
+            response = chat(
+                text=query,
+                chat_history=chat_history,
+                expert_model=expert_model,
+                general_model=general_model,
+            )
+            message = [
+                {"role": "user", "content": query},
+                {"role": "assistant", "content": response},
+            ]
+            chat_history.extend(message)
+            sys.stdout.write(f"ChatBot: {response}\n")
+    except KeyboardInterrupt:
+        sys.stdout.write(
+            f"\n{'==='*80}\n\nInteractive Chat Session Closed\n\n{'==='*80}\n"
+        )  # Fixed
+        sys.exit()
+    except Exception as exc:
+        raise exc
+
+
+if __name__ == "__main__":
+    # Usage for cotinuous chat: uv run chat.py --live_chat
+    # Usage for single query: uv run chat.py --query "What is Type-2 Diabetes?"
     handle()
