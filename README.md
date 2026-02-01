@@ -64,6 +64,28 @@ cp .env.example .env # Later add actual environment variables in .env
 uv run chat.py "Is it safe to take metformin and atorvastatin together?"
 ```
 
+### 5. Using the RAG System
+
+The RAG (Retrieval-Augmented Generation) system uses a vector database to find relevant drug interactions from a CSV file.
+
+#### A. Build the Database
+
+To create or update the vector database, run the following command. This script processes `dataset/db_drug_interactions.csv` and populates the LanceDB table.
+
+```bash
+uv run python -m src.rag.database
+```
+
+#### B. Query the Database
+
+You can directly search the drug interaction database using the retrieval script.
+
+```bash
+# Format: uv run python -m src.rag.retrieval <query> [--limit <number_of_results>]
+
+uv run python -m src.rag.retrieval "Cyclophosphamide and Bicalutamide effects" --limit 5
+```
+
 ---
 
 ## Architecture
