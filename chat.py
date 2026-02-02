@@ -8,7 +8,7 @@ from src.engine.openrouter import MODEL as OpenRouterModel
 from src.app.orchestrator import chat
 
 GENERAL_MODEL = OpenRouterModel
-EXPERT_MODEL = None  # load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
+EXPERT_MODEL = OpenRouterModel  # FIXME: load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
 
 
 def handle():

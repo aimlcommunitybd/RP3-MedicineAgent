@@ -20,24 +20,19 @@ team_expertise = """1. Medicine
 # Classification Prompt
 classification = """You're {identity}
 
-Given a query, classify it as one of the calsses: {classes}.
-You have to strictly classify the query based on given context and team expertise. 
-If the query is not relevant to your team expertise, do not mark it as 'relevant'.
-Your medical team expertise: {team_expertise}
-Given Query: {query}
-Context of the Query: {context}
-Classify the text into one of the following: {classes}
+Given a query, Check whether it relevent to your team expertise: {team_expertise}.
+if the query is relevent, return True else return False.
 
-Finally provide classification and confidence in {response_format}. 
-Remeber the confidence value should inclue your confidence in classifying the text, which should be between 0 to 1 and sum off all confidence score should be 1.
-
+Query: {query}
+Context: {context}
 Response Format: {response_format}
 Example Response: {example_response}
 """
 
-classification_classes = ["relevant", "non-medical", "irrelevant", "greetings"]
 
-classification_example_response = {"text": "givent query text", "result": "1 detected class from the given classes", "confident": [0.8, 0.2, 0.0, 0.0]}
+# classification_classes = ["relevant", "non-medical", "irrelevant", "greetings"]
+
+classification_example_response = {"result": "True"}
 
 
 ## Irrelevent Query Prompt
