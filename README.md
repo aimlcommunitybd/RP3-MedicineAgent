@@ -112,6 +112,12 @@ High-level flow:
 We use several api based small models via openrouter
 ---
 
+## Troubleshoot
+- Module not found: Make sure your python path is correct.
+```
+export PYTHONPATH="${PYTHONPATH}:$(pwd)" # `pwd` should be project base dir
+```
+
 ## External Medical Knowledge Sources
 
 Publicly accessible sources used for retrieval and reference:

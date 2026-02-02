@@ -58,7 +58,7 @@ class RouterConfig:
     MODELS_PRIORITY = [
         RouterModel.QWEN_7B.value,
         RouterModel.MISTRAL_7B.value,
-        RouterModel.LLAMA_3B_IT.value,
+        RouterModel.KLEIN_4b.value,
     ]
     MODELS_PRIORITY_SM = [
         RouterModel.LFM_2B.value,
@@ -67,13 +67,13 @@ class RouterConfig:
     ]
 
     @classmethod
-    def config(cls, MODEL: str = RouterModel.QWEN_7B.value):
+    def config(cls, MODEL: str = RouterModel.QWEN_7B.value, search_prompt: str = None):
         PRIORITY_MODELS = (
             cls.MODELS_PRIORITY_SM
             if MODEL in cls.MODELS_PRIORITY_SM
             else cls.MODELS_PRIORITY
         )
-        return {
+        configartion = {
             "provider": {
                 "order": cls.PROVIDERS_PRIORITY,
                 "ignore": cls.PROVIDERS_IGNORED,
@@ -83,15 +83,24 @@ class RouterConfig:
             "models": PRIORITY_MODELS,
             "route": "fallback",
         }
+        if search_prompt:
+            configartion["plugins"] = [{
+                "id": "web",
+                "engine": "exa", # Optional: "native", "exa", or undefined
+                "max_results": 5,
+                "search_prompt": search_prompt # See default below
+            }]
+        return configartion
 
 
 MODEL = RouterModel.MISTRAL_7B.value
-MODEL_SM = RouterModel.LLAMA_3B_IT.value
-
+MODEL_SM = RouterModel.KLEIN_4b.value
+MODEL_XL = "openai/gpt-4.1-nano" # for json fixing only
 
 def api_complete(
     prompt,
     model: str = MODEL,
+    search_prompt: str = None,
     stop=None,
     frequency_penalty: int = 0,
     n: int = 1,
@@ -101,7 +110,7 @@ def api_complete(
     **kwargs,
 ) -> Tuple[ChatCompletion, str]:
     str_time = time.time()
-    router_config = RouterConfig.config(model)
+    router_config = RouterConfig.config(model, search_prompt=search_prompt)
     messages = [{"role": "user", "content": prompt}] if type(prompt) == str else prompt
     response_format = (
         {"type": "json_object"} if response_format == "json" else {"type": "text"}
@@ -119,6 +128,7 @@ def api_complete(
     )
     choice = completion.choices[0]
     content = choice.message.content
+    grounding_result = completion.choices[0].message.annotations
     runtime = round(time.time() - str_time, 2)
 
     logger.info(
@@ -133,6 +143,7 @@ def api_complete(
         temperature=temperature,
         runtime=runtime,
         content=content,
+        router_config=router_config,
     )
     return completion, content
 
