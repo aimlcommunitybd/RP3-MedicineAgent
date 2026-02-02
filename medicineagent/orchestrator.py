@@ -5,16 +5,10 @@ from datetime import datetime
 import structlog
 from llama_cpp import Llama
 
-from src import settings
-from src.agents.general import *
-from src.agents.expert import *
-# from src.agents.general import (
-#     classify_text,
-#     response_irrelevent_query,
-#     generate_relevent_response,  # test
-# )
-from src.engine.slm_caller import generate_completion
-from src.app.memory import PersistentChatHistory
+from medicineagent.agents.general import *
+from medicineagent.agents.expert import *
+from medicineagent.engine.slm_caller import generate_completion
+from medicineagent.memory import PersistentChatHistory
 
 logger = structlog.get_logger(__name__)
 
@@ -28,7 +22,7 @@ def chat(
     # Classification
     strtime = time.perf_counter()
     datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    global_chat_history = PersistentChatHistory(f"src/app/history/chat_history_{datetime_now}.json")
+    global_chat_history = PersistentChatHistory(f"medicineagent/memory/chat_history_{datetime_now}.json")
     global_chat_history.append(chat_history[-1] if chat_history else {})
     
     result = classify_text(text=text, model=general_model)

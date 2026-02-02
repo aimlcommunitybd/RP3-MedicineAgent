@@ -1,16 +1,19 @@
+import sys
+import traceback
+from pathlib import Path
+
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 import structlog
 from nanoserver import APIServer
 
-from src.engine.openrouter import MODEL as OpenRouterModel
-from src.app.orchestrator import chat
-
+from medicineagent.engine.openrouter import MODEL as OpenRouterModel
+from medicineagent.orchestrator import chat
 
 MODEL = OpenRouterModel
-EXPERT_MODEL = OpenRouterModel  # load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
-
+EXPERT_MODEL = OpenRouterModel  # FIXME: load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
 logger = structlog.get_logger(__name__)
-
-import traceback
 
 server = APIServer()
 
@@ -35,5 +38,5 @@ server.run()
 
 """
 Example usage:
-$ curl -X POST http://localhost:8000/api/chat/ -H "Content-Type: application/json" -d '{"query": "What is the interaction between Napa and Fymoxil?"}'
+curl -X POST http://localhost:8000/api/chat/ -H "Content-Type: application/json" -d '{"query": "What is the interaction between Napa and Fymoxil?"}'
 """

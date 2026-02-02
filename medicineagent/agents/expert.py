@@ -2,7 +2,7 @@ from typing import Literal, Dict, Union, List
 import structlog
 
 
-from src.engine.slm_caller import generate_completion
+from medicineagent.engine.slm_caller import generate_completion
 
 logger = structlog.get_logger(__name__)
 

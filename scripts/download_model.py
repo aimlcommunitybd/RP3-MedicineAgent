@@ -11,7 +11,7 @@ logger = structlog.get_logger(__name__)
 def download_model(
     repo_id: str,
     filename: str,
-    save_dir: Path = Path("./src/models/downloads/"),
+    save_dir: Path = Path("./medicineagent/models/downloads/"),
     repo_type: str = "model",
 ) -> None:
     """

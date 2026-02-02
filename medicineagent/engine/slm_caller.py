@@ -4,9 +4,9 @@ from typing import Literal, Tuple, Union
 
 import structlog
 
-from src import settings
-from src.engine.llamacpp import infer_local_model
-from src.engine.openrouter import api_complete, MODEL_XL
+from medicineagent import settings
+from medicineagent.engine.llamacpp import infer_local_model
+from medicineagent.engine.openrouter import api_complete, MODEL_XL
 
 logger = structlog.get_logger(__name__)
 

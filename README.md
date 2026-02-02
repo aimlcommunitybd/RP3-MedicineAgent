@@ -45,7 +45,7 @@ cp .env.example .env # Later add actual environment variables in .env
 ```
 
 ### 3. Download Models
-This command downloads the gguf formatted models to `src/models/downloads/` by default.   
+This command downloads the gguf formatted models to `medicineagent/models/downloads/` by default.   
 After downloading a model update your `.env` file with proper filepath.  
 We'll use an expert model for Doctor Agent. For that an expert model is required. **Skip to generate general response only.**  
 **Format:** `uv run scripts/download_model.py <hf_repo_id> <gguf_filename>`  
@@ -54,14 +54,25 @@ We'll use an expert model for Doctor Agent. For that an expert model is required
 uv run scripts/download_model.py "unsloth/medgemma-4b-it-GGUF" "medgemma-4b-it-BF16.gguf"
 ```
 
-### 4. Run Chat Command
+### 4. Test Chatbot
+
+#### Chat using script
 Format: `uv run chat.py <args>`
 ```bash
 # For cotinuous chat: 
-uv run chat.py --live_chat
+uv run scripts/chat.py --live_chat
 
 # For single query: 
-uv run chat.py --query "What is Type-2 Diabetes?"
+uv run scripts/chat.py --query "What is Type-2 Diabetes?"
+```
+### Chat using HTTP Request
+```
+# run nanoserver
+make server
+```
+```
+# From your terminal
+curl -X POST http://localhost:8000/api/chat/ -H "Content-Type: application/json" -d '{"query": "What is the interaction between Napa500 and Fymoxil500?"}'
 ```
 
 ---
@@ -83,18 +94,18 @@ High-level flow:
 
 ```text
 .
-├── chat.py                # Entry point for interactive chat
 ├── dataset/               # Drug–drug interaction datasets
 ├── resources/             # Diagrams and documentation assets
-├── scripts/               # Utility scripts (model download, setup)
-├── src/
+├── scripts/               # Utility scripts (model download, setup, chat)
+├── medicineagent/
 │   ├── agents/            # Agent roles (general, expert)
-│   ├── app/               # Orchestration logic
 │   ├── engine/            # LLM tools
+│   ├── memory/            # Temp memory and chat history
 │   ├── models/            # Model files and metadata
 │   ├── prompts/           # Prompt templates
 |   ├── rag/               # rag and vector db logics
 │   ├── tools/             # Vector and web search tools
+│   ├── orchestrator.py    # Orchestration logic
 │   └── settings.py        # Global configuration
 └── pyproject.toml
 ```

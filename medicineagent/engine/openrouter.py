@@ -8,7 +8,7 @@ from typing import Literal, Tuple
 from openai import OpenAI, AsyncOpenAI
 from openai.types.chat import ChatCompletion
 
-from src import settings
+from medicineagent import settings
 
 logger = structlog.get_logger(__name__)
 
