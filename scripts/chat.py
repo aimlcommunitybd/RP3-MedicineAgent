@@ -1,11 +1,15 @@
 import sys
 import argparse
 from typing import Union
+from pathlib import Path
 
-from src import settings
-from src.engine.llamacpp import load_gguf_model
-from src.engine.openrouter import MODEL as OpenRouterModel
-from src.app.orchestrator import chat
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from medicineagent import settings
+from medicineagent.engine.llamacpp import load_gguf_model
+from medicineagent.engine.openrouter import MODEL as OpenRouterModel
+from medicineagent.orchestrator import chat
 
 GENERAL_MODEL = OpenRouterModel
 EXPERT_MODEL = OpenRouterModel  # FIXME: load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)

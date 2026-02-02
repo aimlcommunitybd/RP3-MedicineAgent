@@ -3,8 +3,8 @@ from typing import Literal, Dict, Union, List
 
 import structlog
 
-from src.prompts import general as template
-from src.engine.slm_caller import generate_completion
+from medicineagent.prompts import general as template
+from medicineagent.engine.slm_caller import generate_completion
 
 PURPOSE = "general"
 logger = structlog.get_logger(__name__)

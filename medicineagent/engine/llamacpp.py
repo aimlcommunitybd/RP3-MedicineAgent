@@ -5,7 +5,7 @@ from typing import Union, List, Tuple
 import structlog
 from llama_cpp import Llama
 
-from src import settings
+from medicineagent import settings
 
 
 logger = structlog.get_logger(__name__)

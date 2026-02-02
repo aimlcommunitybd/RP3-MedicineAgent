@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 import structlog
 from linkup import LinkupClient
 
-from src import settings
+from medicineagent import settings
 
 
 logger = structlog.get_logger(__name__)
