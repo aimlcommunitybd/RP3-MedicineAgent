@@ -3,8 +3,6 @@ OpenRouter Usage Tracker
 Tracks model usage, tokens, and costs for all LLM calls.
 """
 
-import os
-import time
 from datetime import datetime
 from typing import Optional
 from dataclasses import dataclass, field

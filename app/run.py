@@ -17,7 +17,7 @@ server = APIServer()
 def generate_response(req, data):
     try:
         query = data["query"]
-        chat_history = [{"role": "user", "content": query}]
+        # chat_history = [{"role": "user", "content": query}]
         result = run_medicine_agent(query=query)
         return {"user": query, "assistant": result}
     except Exception as e:
