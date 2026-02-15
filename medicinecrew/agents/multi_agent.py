@@ -1,6 +1,6 @@
 from crewai import Agent
 from crewai_tools import SerperDevTool, WebsiteSearchTool
-from medicinecrew.agents.openrouter import create_llm
+from medicinecrew.engines.openrouter import create_llm
 from medicinecrew.rag import local_drug_tool
 
 
@@ -29,7 +29,7 @@ def create_triage_agent() -> Agent:
         You have access to search tools to answer simple medication questions directly.""",
         verbose=True,
         llm=llm,
-        tools=[search_tool, local_drug_tool],
+        tools=[search_tool],
         allow_delegation=True,  # Can delegate to other agents
     )
 

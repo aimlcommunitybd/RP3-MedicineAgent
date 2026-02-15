@@ -6,10 +6,11 @@ from medicinecrew.agents.multi_agent import (
     create_expert_agent,
     create_safety_verifier_agent,
 )
+from medicinecrew.engines.usage_tracker import get_tracker
 from medicinecrew import prompts as template
 
 
-def run_medicine_agent(query: str) -> str:
+def run_medicine_agent(query: str, show_usage: bool = True) -> str:
     """Run the multi-agent medicine consultation system
 
     Flow:
@@ -18,6 +19,10 @@ def run_medicine_agent(query: str) -> str:
        - Complex medical → Continue to research pipeline
     2. If complex: Researcher → Expert → Safety
     3. Return final response
+
+    Args:
+        query: User query
+        show_usage: Whether to print usage summary after (default: True)
     """
 
     # Step 1: Run triage agent first to decide the flow
@@ -64,8 +69,16 @@ Your response must start with either:
         # Simple query - triage answered directly
         # Remove "ANSWER:" prefix if present
         if triage_upper.startswith("ANSWER:"):
-            return triage_response[7:].strip()
-        return triage_response
+            result = triage_response[7:].strip()
+        else:
+            result = triage_response
+
+        # Print usage summary
+        if show_usage:
+            tracker = get_tracker()
+            tracker.print_summary()
+
+        return result
 
     # Complex query - run full pipeline
     print("DEBUG: Delegating to research pipeline...")
@@ -114,7 +127,9 @@ Your response must start with either:
     )
     pipeline_crew.kickoff()
 
+    # Print usage summary if enabled
+    if show_usage:
+        tracker = get_tracker()
+        tracker.print_summary()
+
     return str(advice_task.output) if advice_task.output else "No response generated"
-
-
-
