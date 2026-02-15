@@ -1,8 +1,21 @@
-# MedicineCrew - Multi-Agent Medication Query System
+# SLMs in Multi-Agent Systems for Medication Safety
+
+This repository explores the design and evaluation of **Small Language Model (SLM)–based multi-agent systems** for answering medication-related queries.
+
+---
+
+## Research Objective
+
+The primary objectives of this research are:
+
+- Assess how effectively **SLM-based multi-agent architectures** can answer medication-related questions safely and accurately
+- Compare **multi-agent SLM systems** against **single-agent LLM chatbots** in terms of reliability, hallucination control, and safety for drug information
+
+---
+
+## Technical Overview
 
 A CrewAI-based multi-agent system for answering patient medication queries with evidence-based responses.
-
-## Overview
 
 MedicineCrew uses **5 specialized AI agents** that collaborate to provide accurate, safe medical information:
 
