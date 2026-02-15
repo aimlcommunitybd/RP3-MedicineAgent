@@ -14,8 +14,8 @@ def classify_text(
     text: str,
     model: Union[object, str],
     context: str = None,
-    max_tokens: int = 100,
-    temparature: float = 0.8,
+    max_tokens: int = 256,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "json",
     purpose: str = PURPOSE,
 ):
@@ -53,8 +53,8 @@ def response_irrelevent_query(
     model: Union[object, str],
     context: str = None,
     query_class: str = "General Query",
-    max_tokens: int = 100,
-    temparature: float = 0.8,
+    max_tokens: int = 256,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
@@ -90,8 +90,8 @@ def generate_relevent_response(
     text: str,
     model: Union[object, str],
     context: str = None,
-    max_tokens: int = 100,
-    temparature: float = 0.8,
+    max_tokens: int = 512,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
@@ -119,17 +119,29 @@ def generate_relevent_response(
     logger.info("[Done] Generated relevent query answer", query=text, content=content)
     return content
 
+
 def extract_named_entity(
     text: str,
     model: Union[object, str],
     context: str = None,
     query_class: str = "General Query",
-    max_tokens: int = 100,
-    temparature: float = 0.8,
+    max_tokens: int = 256,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "json",
     purpose: str = PURPOSE,
 ):
-    prompt = "given a user query, check if there is any medicine name. if yes, extract the medicine name and return in json format as {'medicine_names': [list of names]}. if no medicine name is present, return {'medicine_names': []}\n\nUser Query: {text}\n\nResponse:"
+    prompt = f"""Extract ALL medicine/drug names from the user query, including brand names, generic names, and combination drugs. Look for patterns like:
+- Numbers in medicine names (e.g., Napa500, Fymoxil500, Napa, Fymoxil, Napa+)
+- Common drug suffixes (-cilin, -ox, -ine, -ol, -in, -ate)
+- Any words that could be medication names
+
+User Query: {text}
+
+Return in JSON format:
+{{"medicine_names": ["list of all medicine names found"]}}
+
+If no medicines found, return {{"medicine_names": []}}"""
+
     logger.info(
         "Extracting Named Entities from Query",
         query=text,
@@ -147,36 +159,63 @@ def extract_named_entity(
     logger.info("[Done] Named Entity Extraction", query=text, content=content)
     return content
 
+
 def find_generic_name(
     medicine_names: List[str],
     model: Union[object, str],
-    max_tokens: int = 200,
-    temparature: float = 0.8,
+    max_tokens: int = 512,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "json",
     purpose: str = PURPOSE,
 ):
     logger.info("Finding Generic Names for Medicines", medicine_names=medicine_names)
-    prompt = "Given a list of medicine names, return their generic names in a JSON format as {'medicines': {'name': 'generic_name', ...}}. If a medicine name does not have a known generic name, return 'empty str' for that entry.\n\nMedicine Names: {medicine_names}\n\nResponse:"
+
+    example_response = {
+        "medicines": {"Aspirin": "Acetylsalicylic acid", "Panadol": "Paracetamol"}
+    }
+
+    prompt = f"""Given a list of medicine names, return their generic names in a JSON format as {{"medicines": {{"brand_name": "generic_name"}}}}.
+
+Common medicine references:
+- Napa500, Napa, Paracetamol = Paracetamol (Acetaminophen)
+- Fymoxil500, Fymoxil = Amoxicillin with Clavulanic acid
+- Napa Plus = Paracetamol + Tramadol
+- Monocef = Ceftriaxone
+- Napa Extend = Paracetamol extended release
+
+Medicine Names: {medicine_names}
+
+Response:"""
+
     completion, content = generate_completion(
         prompt=prompt,
-        search_prompt=f"What are the generic names for the following medicines: {medicine_names}?",
+        search_prompt=f"What are the generic names for: {', '.join(medicine_names)}? Include brand name and generic name.",
         model=model,
         max_tokens=max_tokens,
         temparature=temparature,
         response_format=response_format,
         purpose=purpose,
-        # example_reponse=template.classification_example_response,
+        example_response=example_response,
     )
-    logger.info("[Done] Finding Generic Names for Medicines", medicine_names=medicine_names, content=content)
-    knowledge = completion.choices[0].message.annotations
-    return content, knowledge  
+    logger.info(
+        "[Done] Finding Generic Names for Medicines",
+        medicine_names=medicine_names,
+        content=content,
+    )
+    knowledge = (
+        completion.choices[0].message.annotations
+        if hasattr(completion, "choices")
+        else None
+    )
+    return content, knowledge
+
 
 def find_drug_to_drug_interaction(
-    generic_names:List[str],
+    generic_names: List[str],
     knowledge: Dict,
     model: Union[object, str],
-    max_tokens: int = 300,
-    temparature: float = 0.8,
+    max_tokens: int = 512,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
@@ -192,17 +231,21 @@ def find_drug_to_drug_interaction(
         purpose=purpose,
         # example_reponse=template.classification_example_response,
     )
-    logger.info("[Done] Finding Drug-to-Drug Interactions", generic_names=generic_names, content=content)
+    logger.info(
+        "[Done] Finding Drug-to-Drug Interactions",
+        generic_names=generic_names,
+        content=content,
+    )
     knowledge = completion.choices[0].message.annotations
     return content, knowledge
-    
+
 
 def rewrite_empathic_response(
     text: str,
     model: Union[object, str],
     context: str = None,
-    max_tokens: int = 150,
-    temparature: float = 0.8,
+    max_tokens: int = 512,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
@@ -227,17 +270,18 @@ def rewrite_empathic_response(
     logger.info("[Done] Empathic Response Rewritten", query=text, content=content)
     return content
 
+
 def reply_general_query(
     text: str,
     model: Union[object, str],
     chat_history: Union[List[dict], None] = None,
-    max_tokens: int = 300,
-    temparature: float = 0.8,
+    max_tokens: int = 512,
+    temparature: float = 0.3,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
     prompt = """Given a query from a user, provide a detailed and accurate response based on your medical knowledge and expertise. Ensure that the response is clear, concise, and easy to understand for the user. \n\nUser Query: '{text}'\n\nContext: {chat_history}\n\nResponse:"""
-    
+
     logger.info(
         "Generating General Query Response",
         query=text,

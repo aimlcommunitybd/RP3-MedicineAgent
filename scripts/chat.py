@@ -12,7 +12,7 @@ from medicineagent.engine.openrouter import MODEL as OpenRouterModel
 from medicineagent.orchestrator import chat
 
 GENERAL_MODEL = OpenRouterModel
-EXPERT_MODEL = OpenRouterModel  # FIXME: load_gguf_model(model_path=settings.EXPERT_MODEL_PATH)
+EXPERT_MODEL = OpenRouterModel  # Using OpenRouter for both expert and evaluator
 
 
 def handle():
@@ -48,7 +48,7 @@ def run_live_chat(
 ):
     chat_history = []
     sys.stdout.write(
-        f"\n{'==='*80}\nTurning on Interactive Chat Session. Press 'ctrl+c' to stop.\n{'==='*80}\n\n"
+        f"\n{'===' * 80}\nTurning on Interactive Chat Session. Press 'ctrl+c' to stop.\n{'===' * 80}\n\n"
     )
     try:
         while True:
@@ -67,7 +67,7 @@ def run_live_chat(
             sys.stdout.write(f"ChatBot: {response}\n")
     except KeyboardInterrupt:
         sys.stdout.write(
-            f"\n{'==='*80}\n\nInteractive Chat Session Closed\n\n{'==='*80}\n"
+            f"\n{'===' * 80}\n\nInteractive Chat Session Closed\n\n{'===' * 80}\n"
         )  # Fixed
         sys.exit()
     except Exception as exc:

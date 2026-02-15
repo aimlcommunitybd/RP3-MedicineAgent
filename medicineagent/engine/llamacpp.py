@@ -11,7 +11,6 @@ from medicineagent import settings
 logger = structlog.get_logger(__name__)
 
 
-
 def load_gguf_model(
     model_path: str = settings.EXPERT_MODEL_PATH,
     context_window: int = 1024,
@@ -68,7 +67,7 @@ def infer_local_model(
 
 def process_prompt(
     prompt: Union[List[dict], str],
-    system_message: str = "You're a helpful Python Coding Assistant. Help user on his task.",
+    system_message: str = "You are a helpful and accurate medical assistant. Provide safe, evidence-based information. If you're unsure, say so.",
 ):
     """
     Prompt can be in 2 format.
@@ -81,5 +80,3 @@ def process_prompt(
             {"role": "user", "content": prompt},
         ]
     return prompt
-
-
