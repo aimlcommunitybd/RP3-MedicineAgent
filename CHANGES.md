@@ -140,6 +140,63 @@ Multiple improvements to fix response quality, JSON parsing, and agent behavior.
 
 ---
 
+## 12. CrewAI Multi-Agent System (NEW)
+
+**Files Added:**
+
+| File | Purpose |
+|------|---------|
+| `medicineagent/agents/crewai_llm.py` | OpenRouter LLM wrapper for CrewAI |
+| `medicineagent/agents/multi_agent.py` | Agent definitions (Triage, NER, Researcher, Expert, Safety) |
+| `medicineagent/orchestrator_crewai.py` | Main orchestration using CrewAI |
+| `docs/MULTI_AGENT_SYSTEM.md` | Documentation |
+
+### Agent Workflow
+
+```
+User Query
+    ↓
+[Triage Agent]      → Classifies query type
+    ↓
+[NER Agent]         → Extracts medicine names
+    ↓
+[Researcher Agent]  → Web searches for drug info
+    ↓
+[Expert Agent]      → Generates medical advice
+    ↓
+[Safety Agent]      → Verifies advice is safe
+    ↓
+Final Response
+```
+
+### Features
+
+- **5 specialized agents** with distinct roles
+- **Sequential execution** with context passing
+- **Web search integration** via SerperDevTool
+- **Safety verification** as final check
+- **OpenRouter integration** with custom LLM wrapper
+
+### Usage
+
+```python
+from medicineagent.orchestrator_crewai import run_medicine_agent
+
+result = run_medicine_agent("What is Napa500?")
+print(result)
+```
+
+### Dependencies Added
+
+```toml
+crewai>=0.80.0
+crewai-tools>=0.14.0
+litellm
+onnxruntime>=1.19.0
+```
+
+---
+
 ## Files Modified
 
 | File | Changes |
@@ -152,6 +209,7 @@ Multiple improvements to fix response quality, JSON parsing, and agent behavior.
 | `medicineagent/settings.py` | Context window |
 | `.env` | Model path |
 | `scripts/chat.py` | Model selection |
+| `pyproject.toml` | Added crewai dependencies |
 
 ---
 

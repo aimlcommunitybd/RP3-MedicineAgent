@@ -56,20 +56,14 @@ User Query
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/aimlcommunitybd/MediFlow.git
-cd MediFlow
+cd RP3-MedicineAgent
 uv venv
 uv sync
-source .venv/bin/activate
 ```
-**Note:** `uv` should be already installed in your system. Read [uv-astral installation guide](https://docs.astral.sh/uv/getting-started/installation/). Alternatively, You can use installation script using `bash setup.sh` that auto setup uv and dependencies in your ubuntu machine.
 
 ### 2. Environment Variables
 
 Create `.env` file:
-```bash
-cp .env.example .env
-```
 
 ```env
 # OpenRouter (required)
@@ -91,9 +85,7 @@ The system uses `dataset/db_drug_interactions.csv` for local drug interaction lo
 ## Usage
 
 ### Python API
-```bash
-uv run python
-```
+
 ```python
 from medicinecrew.orchestrator_crewai import run_medicine_agent
 
@@ -108,16 +100,23 @@ result = run_medicine_agent("What is the interaction between Napa500 and Fymoxil
 
 ### CLI
 
-TBA
+```bash
+# Test greeting
+uv run python medicinecrew/orchestrator_crewai.py greeting
+
+# Test off-topic
+uv run python medicinecrew/orchestrator_crewai.py offtopic
+
+# Test complex medical
+uv run python medicinecrew/orchestrator_crewai.py complex
+```
 
 ### HTTP Server
 
 ```bash
 # Run server
 make run
-```
-#### On a separate terminal
-```bash
+
 # Query
 curl -X POST http://localhost:8000/api/chat/ \
   -H "Content-Type: application/json" \
