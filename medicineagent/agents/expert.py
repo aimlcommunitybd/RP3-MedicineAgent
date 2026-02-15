@@ -1,3 +1,4 @@
+import json
 from typing import Literal, Dict, Union, List
 import structlog
 
@@ -7,8 +8,8 @@ from medicineagent.engine.slm_caller import generate_completion
 logger = structlog.get_logger(__name__)
 
 
-# PURPOSE = "expert"
 PURPOSE = "general"
+
 
 def get_expert_advice(
     query: str,
@@ -18,16 +19,49 @@ def get_expert_advice(
     previous_response: str = None,
     previous_response_evaluation: str = None,
     memory: List[dict] = None,
-    max_tokens: int = 500,
-    temparature: float = 0.7,
+    max_tokens: int = 1024,
+    temparature: float = 0.2,
     response_format: Literal["json", "text"] = "text",
     purpose: str = PURPOSE,
 ):
-    logger.info("Generating Expert Advice", query=query, ground_knowledge=ground_knowledge)
-    
-    prompt = f"""You are an expert in medicine and healthcare. Based on the query '{query}', provide expert advice using the following ground knowledge: {ground_knowledge}. \n\nContext: {context}\n\nProvide a detailed and accurate response."""
-    if previous_response_evaluation:
-        prompt += f"\n\nNote: Givent evaluation of your previous responses:. Please improve based on this feedback. \n\nYour Previous Response: {previous_response}\n\nEvaluation: {previous_response_evaluation}"
+    logger.info(
+        "Generating Expert Advice", query=query, ground_knowledge=ground_knowledge
+    )
+
+    knowledge_str = (
+        str(ground_knowledge)
+        if ground_knowledge
+        else "No external knowledge available. Use your medical knowledge."
+    )
+
+    prompt = f"""You are an expert medical doctor. Answer the patient's query accurately and safely.
+
+PATIENT QUERY: {query}
+
+GROUND KNOWLEDGE (from web search):
+{knowledge_str}
+
+INSTRUCTIONS:
+1. Only use the ground knowledge provided to answer medication-related questions
+2. If ground knowledge is insufficient, state that clearly
+3. Include warnings about drug interactions, side effects, and contraindications
+4. Always recommend consulting a healthcare professional for medical advice
+5. Be concise but complete
+6. If you don't know something, say so honestly
+
+Provide your expert response:"""
+
+    if previous_response and previous_response_evaluation:
+        prompt += f"""
+
+PREVIOUS RESPONSE (which was rejected):
+{previous_response}
+
+EVALUATOR FEEDBACK:
+{previous_response_evaluation}
+
+Please address the evaluator's feedback and provide an improved response:"""
+
     completion, content = generate_completion(
         prompt=prompt,
         model=model,
@@ -40,40 +74,74 @@ def get_expert_advice(
     return content
 
 
-def evaluate_expert_advice( 
+def evaluate_expert_advice(
     query: str,
     junior_doctor_response: str,
     model: object,
     context: List[str] = None,
     ground_knowledge: dict = None,
     criteria: List[str] = None,
-    max_tokens: int = 1000,
-    temparature: float = 0.5,
+    max_tokens: int = 1024,
+    temparature: float = 0.2,
     response_format: Literal["json", "text"] = "json",
     purpose: str = PURPOSE,
 ):
-    logger.info("Evaluating Expert Response", junior_doctor_response=junior_doctor_response, criteria=criteria)
+    logger.info(
+        "Evaluating Expert Response",
+        junior_doctor_response=junior_doctor_response,
+        criteria=criteria,
+    )
     criteria = criteria or [
-        "Accuracy",
-        "Relevance",
-        "Clarity",
-        "Completeness",
-        "Use of Ground Knowledge",
+        "Accuracy - Is the medical information correct?",
+        "Relevance - Does it answer the patient's question?",
+        "Clarity - Is it easy to understand?",
+        "Completeness - Are all important aspects covered?",
+        "Safety - Are there appropriate warnings?",
+        "Use of Ground Knowledge - Does it cite the provided knowledge?",
     ]
     example_response = {
-        "accuracy": 0.8,
-        "relevance": 0.9,
-        "clarity": 0.85,
-        "completeness": 0.75,
-        "use_of_ground_knowledge": 0.9,
-        "overall_score": 0.84,
-        "comments": "Brief summary of key strengths and weaknesses",
-        "suggestions": ["Suggestion 1", "Suggestion 2"],
-        "accept_response": True
+        "accuracy": 0.9,
+        "relevance": 1.0,
+        "clarity": 0.8,
+        "completeness": 0.7,
+        "safety": 0.9,
+        "use_of_ground_knowledge": 0.8,
+        "overall_score": 0.85,
+        "key_issues": ["Issue 1", "Issue 2"],
+        "strengths": ["Good point 1", "Good point 2"],
+        "suggestions": ["Specific suggestion to improve"],
+        "accept_response": False,
     }
-    
-    prompt = f"""You are an Senior Expert in Medicine. Evaluate the following response is correct based on patients query and medical knowledge. \n\nInitial junior_doctor_response: '{junior_doctor_response}'. \n\nEvaluation Criteria: {criteria}\n\nProvide a wise evaluation. grounded knowledge: {ground_knowledge}.\n\nContext: {context}.\n\nProvide your evaluation in Json format. \n\nExample response: {example_response}\n\nRemember: Provide your response in Json format only. Open and Close with curly braces."""
-    
+
+    knowledge_str = (
+        str(ground_knowledge) if ground_knowledge else "No ground knowledge provided."
+    )
+
+    prompt = f"""You are a Senior Medical Expert reviewing a junior doctor's response. Be STRICT - medical accuracy is critical for patient safety.
+
+PATIENT QUERY: {query}
+
+JUNIOR DOCTOR'S RESPONSE:
+{junior_doctor_response}
+
+GROUND KNOWLEDGE PROVIDED:
+{knowledge_str}
+
+EVALUATION CRITERIA:
+{chr(10).join(f"- {c}" for c in criteria)}
+
+IMPORTANT:
+1. If there's no ground knowledge, check if the response appropriately mentions this limitation
+2. For medication questions, verify drug names, dosages, and interactions are correct
+3. Flag any potential safety concerns or missing warnings
+4. A response should ONLY be accepted if it's accurate, safe, and answers the question
+5. Be more likely to reject than accept - patient safety comes first
+
+Provide your evaluation in JSON format:
+{json.dumps(example_response)}
+
+Remember: Provide your response in JSON format only. Open and Close with curly braces."""
+
     completion, content = generate_completion(
         prompt=prompt,
         model=model,
@@ -81,10 +149,12 @@ def evaluate_expert_advice(
         temparature=temparature,
         response_format=response_format,
         purpose=purpose,
-        example_response=example_response
+        example_response=example_response,
     )
-    
-    logger.info("[Done] Expert Response Evaluated", junior_doctor_response=junior_doctor_response, evaluator_doctor_response=content)
+
+    logger.info(
+        "[Done] Expert Response Evaluated",
+        junior_doctor_response=junior_doctor_response,
+        evaluator_doctor_response=content,
+    )
     return content
-    
-    
