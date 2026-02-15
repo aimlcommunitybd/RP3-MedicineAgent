@@ -56,10 +56,12 @@ User Query
 ### 1. Clone & Install
 
 ```bash
-cd RP3-MedicineAgent
+git clone https://github.com/aimlcommunitybd/MediFlow.git
+cd MediFlow
 uv venv
 uv sync
 ```
+**Note:** `uv` should be already installed in your system. Read [uv-astral installation guide](https://docs.astral.sh/uv/getting-started/installation/). Alternatively, You can use installation script using `bash setup.sh` that auto setup uv and dependencies in your ubuntu machine.
 
 ### 2. Environment Variables
 
